@@ -1,0 +1,48 @@
+<html>
+
+<head>
+    <title>Personal Video Logging</title>
+    <script src="https://cdn.firebase.com/js/client/1.0.15/firebase.js"></script>
+    <link rel="stylesheet" href="//assets.ziggeo.com/css/ziggeo-betajs-player.min.css" />
+    <script src="//assets.ziggeo.com/js/ziggeo-jquery-json2-betajs-player.min.js"></script>
+    <script>ZiggeoApi.token = "yourziggeoapitokenhere";</script>
+</head>
+
+<body>
+
+    <script>
+        var tokenRef = new Firebase('https://<yourfirebasehere>.firebaseio.com/tokens');
+
+        function resetRecorder() {
+            $("#recorder").html("<ziggeo ziggeo-width=320 ziggeo-height=240></ziggeo>");
+        }
+
+        function addPlayer(token) {
+            $("#list").prepend("<p><ziggeo ziggeo-video='" + token + "' ziggeo-width=320 ziggeo-height=240</ziggeo></p>");
+        }
+
+        tokenRef.on('child_added', function(snapshot) {
+            var token = snapshot.val().token;
+            addPlayer(token);
+        });
+
+        ZiggeoApi.Events.on("submitted", function (data) {
+                tokenRef.push({token : data.video.token});
+                resetRecorder();
+        });
+    </script>
+    
+    <h1>Personal Video Logging!</h1>
+   
+    <div id="recorder"> 
+      <ziggeo ziggeo-width=320
+              ziggeo-height=240>
+      </ziggeo>
+    </div>
+
+    <div id="list">
+    </div>
+
+</body>
+
+</html>
